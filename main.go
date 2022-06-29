@@ -1,32 +1,30 @@
 package main
 
 import (
-	"fmt"
-	"log"
-	"os"
-
-	"github.com/dghubble/go-twitter/twitter"
-	"github.com/dghubble/oauth1"
-	"github.com/joho/godotenv"
+	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/octavio-luna/twitter_bot/pkg/settings"
 )
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	c := settings.New()
 
-	consumerKey := os.Getenv("CONSUMERKEY")
-	consumerSecret := os.Getenv("CONSUMERSECRET")
-	accessToken := os.Getenv("ACCESSTOKEN")
-	accessTokenSecret := os.Getenv("ACCESSTOKENSECRET")
+	// user, err := c.GetCredentials()
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// fmt.Println(user)
 
-	config := oauth1.NewConfig(consumerKey, consumerSecret)
-	token := oauth1.NewToken(accessToken, accessTokenSecret)
+	// msgs, err := c.GetMessages()
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// for _, msg := range msgs {
+	// 	fmt.Println(msg.Message.Data.Text)
+	// }
+	lambda.Start(c.GetCredentials)
+}
 
-	httpClient := config.Client(oauth1.NoContext, token)
-	client := twitter.NewClient(httpClient)
-
+/*
 	user, _, err := client.Accounts.VerifyCredentials(&twitter.AccountVerifyParams{})
 	if err != nil {
 		fmt.Printf("Error connecting %v", err)
@@ -35,14 +33,12 @@ func main() {
 
 	messages, _, err := client.DirectMessages.EventsList(&twitter.DirectMessageEventsListParams{})
 	if err != nil {
-		fmt.Println("Error getting msgs")
+		return fmt.Sprint("Error getting msgs"), nil
 	}
-	for _, event := range messages.Events {
-		fmt.Printf("%+v\n", event)
-		fmt.Printf("  %+v\n", event.Message)
-		fmt.Printf("  %+v\n", event.Message.Data)
-	}
-
-	event, _, err := client.DirectMessages.EventsShow("1066903366071017476", nil)
-	fmt.Printf("DM Events Show:\n%+v, %v\n", event.Message.Data, err)
-}
+	// for _, event := range messages.Events {
+	// 	fmt.Printf("%+v\n", event)
+	// 	fmt.Printf("  %+v\n", event.Message)
+	// 	fmt.Printf("  %+v\n", event.Message.Data.Text)
+	// }
+	return messages.Events[0].Message.Data.Text, nil
+*/
